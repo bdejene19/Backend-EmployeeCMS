@@ -12,8 +12,8 @@ VALUES  ('Engineer', 80000.0, 1),
         ("Lead Software Engineer", 120000.0, 1),
         ('Sales Associate', 70000.0, 3);
 
-INSERT INTO employee(first_name, last_name, role_id manager_id)
-VALUES ("Bement", "Dejene", 1, 2);
+INSERT INTO employee(first_name, last_name, manager_id)
+VALUES ("Bement", "Dejene", 3232    );
 --         ("Bruk", "Dejene", 102, 200),
 --         ("Teddy", "Dejene", 103, 300),
 --         ("Dejene", "Sahle", 101, 100),
