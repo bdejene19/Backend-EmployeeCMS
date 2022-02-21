@@ -17,7 +17,7 @@ const db = mysql.createConnection(
  */
  const createPromptObjectsArray = (questionsArr) => {
     const promptArr = questionsArr.map((question, index) =>  {
-        if (index === questionsArr.length - 1) {
+        if (index === questionsArr.length - 1 && questionsArr.length > 1) {
             return {
                 type: 'list',
                 message: 'Select a Role to add to:',
@@ -25,7 +25,12 @@ const db = mysql.createConnection(
                 name: 'roleSelect',
             }
         } else {
-            let nameVal = question.split(" ")[3];
+            let nameVal = '';
+            if (questionsArr.length > 1) {
+                nameVal = question.split(" ")[3];
+            } else {
+                nameVal = 'deptName';
+            }
             return {
                 type: 'input',
                 message: `${question}`,
@@ -37,22 +42,32 @@ const db = mysql.createConnection(
     })
     return promptArr;
 }
-const deptQs = [];
+let promptQs = [];
+const deptQs = ["What is the name of your department?"];
 const roleQs = ['What is the name of the role?', 'What is the salary of the role?', ['Engineer', "Sales", "Customer Services", "Administration"]]
-const addRolePrompt = () => {
+const addRolePrompt = (role) => {
     // raw list questions 'Which department does the role belong to?'
-    const rolePrompts = createPromptObjectsArray(roleQs);
-    return inquirer.prompt(rolePrompts)
-}
+    if (role === 'Role') {
+        promptQs = roleQs
+    } else if (role === "Department") {
+        promptQs = deptQs
+    } else {
 
+    }
+
+    const promptObjs = createPromptObjectsArray(promptQs);
+    return inquirer.prompt(promptObjs)
+}
+const allRoles = ["Engineer", "Lead Software Engineer", "Administration", "Receptionist", "Communications", "Sales Associate", "Sales  Manager"]
 const addToTable = (name) => {
     let nameArr = name.split(" ");
     let userQuery = nameArr[nameArr.length - 1];
     let dbTableName = '';
+    let dept_id = 0;
     let dbColNames = '';
     let insertVals = '';
     let sqlStr = ``;
-    console.log(userQuery);
+    console.log(`\nAdd a ${userQuery}\n`);
     if (userQuery === 'Department') {
         dbTableName = 'department';
         dbColNames = 'dept_name';
@@ -66,18 +81,30 @@ const addToTable = (name) => {
     }
 
     // prompts for new employee
-    addRolePrompt().then(roleData => {
+    addRolePrompt(userQuery).then(roleData => {
     // sql insertion after prompts
-    const { name, salary, roleSelect } = roleData;
-    insertVals = `"${name}", ${parseInt(salary)}, ${parseInt(232)}`
-    sqlStr = `INSERT INTO ${dbTableName}(${dbColNames}) ;`;
-    console.log('my sql db query: ', sqlStr);
-    console.log('mysql table name', dbTableName);
-    db.query(`${sqlStr}`, (err, data) => {
-        err ? console.log(err) : console.log(data);
-        console.log(data);
-    })
+        if (userQuery === 'Department') {
+            const { deptName } = roleData;
+            insertVals = `"${deptName}"`;
+            // sqlStr = `INSERT INTO ${dbTableName}(${dbColNames}) VALUES (${insertVals});`;
 
+        }
+        else if (userQuery === 'Role') {
+            const { name, salary, roleSelect } = roleData;
+            allRoles.map((role, index) => {
+                if (role === roleSelect) {
+                    dept_id = index + 1;
+                }
+            })
+            insertVals = `"${name}", ${parseInt(salary)}, ${parseInt(dept_id)}`;            
+        }
+        sqlStr = `INSERT INTO ${dbTableName}(${dbColNames}) VALUES (${insertVals});`;
+
+        console.log('my sql str: ', sqlStr);
+        db.query(`${sqlStr}`, (err, data) => {
+            err ? console.log(err) : console.log(`success adding new ${name} role to database${dbTableName}.`);
+            console.log(data);
+        })
     });
     
 }
