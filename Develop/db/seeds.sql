@@ -15,10 +15,10 @@ VALUES  ('Engineer', 80000.0, 1),
         ('Sales Associate', 70000.0, 6);
 
 INSERT INTO employee(first_name, last_name, role_id)
-VALUES ("Bement", "Dejene", 1, 2),
+VALUES  ("Bement", "Dejene", 1,),
         ("Bruk", "Dejene", 4),
-        ("Teddy", "Dejene", 7),
+        ("Teddy", "Dejene", 3),
         ("Dejene", "Sahle", 2),
-        ("Justin", "Kim", 6);
+        ("Justin", "Kim", 5);
 
         
