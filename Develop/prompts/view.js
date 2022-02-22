@@ -26,7 +26,7 @@ const viewTableFromDb = (name) => {
     } else {
         dbTableName = 'employee';
     }
-    sqlStr = `SELECT ${dbQuery} FROM ${dbTableName}`;
+    sqlStr = `SELECT ${dbQuery} FROM ${dbTableName};`;
 
     db.query(`${sqlStr}`, (err, data) => {
         err ? console.log('error getting data from sql server') : console.table(data)
